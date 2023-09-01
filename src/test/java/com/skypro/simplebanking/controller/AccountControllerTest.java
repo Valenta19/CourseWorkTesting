@@ -1,8 +1,6 @@
 package com.skypro.simplebanking.controller;
 
 
-
-
 import com.skypro.simplebanking.entity.Account;
 import com.skypro.simplebanking.entity.AccountCurrency;
 import com.skypro.simplebanking.entity.User;
@@ -61,6 +59,7 @@ public class AccountControllerTest {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
+
     @Test
     void getUserAccountTest() throws Exception {
         User user = new User("user", passwordEncoder.encode("Valenta2001!"));
@@ -93,7 +92,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void withdrawFromAccountTest() throws Exception{
+    void withdrawFromAccountTest() throws Exception {
         User user = new User("user", passwordEncoder.encode("Valenta2001!"));
         user = userRepository.save(user);
         Account account = accountRepository.save(new Account(1L, user));
