@@ -66,7 +66,6 @@ public class AccountControllerTest {
         user = userRepository.save(user);
         Account account = new Account(AccountCurrency.USD, 1L, user);
         account = accountRepository.save(account);
-
         String base64Encoded = Base64Utils.encodeToString((user.getUsername() + ":" + "Valenta2001!")
                 .getBytes(StandardCharsets.UTF_8));
         mockMvc.perform(get("/account/" + account.getId())

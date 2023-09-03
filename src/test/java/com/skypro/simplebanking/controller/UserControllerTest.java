@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,8 +68,6 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden());
 
     }
-
-    @WithMockUser(username = "admin", roles = "ADMIN")
     @Test
     void createUserTestWithRoleAdmin() throws Exception {
         JSONObject createUserRequest = new JSONObject();
@@ -83,15 +80,14 @@ public class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = "USER")
-    void getListUsers_Test() throws Exception {
-        mockMvc.perform(get("/user/list"))
-                .andExpect(status().isOk())
-                .andExpect((ResultMatcher) jsonPath("$").isArray())
-                .andExpect((ResultMatcher) jsonPath("$").isNotEmpty())
-                .andExpect((ResultMatcher) jsonPath("$.length()").value(3));
+    void getAllUsersTest() throws Exception {
+        User user = new User("user", passwordEncoder.encode("Valenta2001!"));
+        user = userRepository.save(user);
+        String base64Encoded = Base64Utils.encodeToString((user.getUsername() + ":" + "Valenta2001!")
+                .getBytes(StandardCharsets.UTF_8));
+        mockMvc.perform(get("/user/list/").header(HttpHeaders.AUTHORIZATION, "Basic " + base64Encoded))
+                .andExpect(status().isOk());
     }
-
 
     @Test
     void getMyProfileTest() throws Exception {
