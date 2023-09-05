@@ -6,6 +6,7 @@ import com.skypro.simplebanking.repository.UserRepository;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.util.Base64Utils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -22,7 +22,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +39,11 @@ public class UserControllerTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
+    public static final String ADMIN_KEY = "X-SECURITY-ADMIN-KEY";
+    @Value("${app.security.admin-token}")
+    private String token;
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres")
             .withUsername("postgres")
@@ -73,7 +77,8 @@ public class UserControllerTest {
         JSONObject createUserRequest = new JSONObject();
         createUserRequest.put("username", "admin");
         createUserRequest.put("password", "Valenta2001!");
-        mockMvc.perform(post("/user")
+         mockMvc.perform(post("/user")
+                        .header(ADMIN_KEY, token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createUserRequest.toString()))
                 .andExpect(status().isOk());
